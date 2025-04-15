@@ -1,0 +1,84 @@
+import json
+
+class Inventory:
+    def __init__(self):
+        self.products = {}
+    
+    def add_product(self):
+        product_id = int(input("Enter Product ID: "))
+        if product_id in self.products:
+            print("Product ID already exists!")
+            return
+        name = input("Enter Product Name: ")
+        category = input("Enter Category: ")
+        price = float(input("Enter Price: "))
+        stock = int(input("Enter Stock Quantity: "))
+        self.products[product_id] = {
+            "name": name,
+            "category": category,
+            "price": price,
+            "stock": stock
+        }
+        print(f"Added product: {name}")
+    
+    def update_stock(self):
+        product_id = int(input("Enter Product ID to update stock: "))
+        if product_id in self.products:
+            stock = int(input("Enter new stock quantity: "))
+            self.products[product_id]["stock"] = stock
+            print(f"Updated stock for {self.products[product_id]['name']} to {stock}")
+        else:
+            print("Product not found!")
+    
+    def sell_product(self):
+        product_id = int(input("Enter Product ID to sell: "))
+        if product_id in self.products:
+            quantity = int(input("Enter quantity to sell: "))
+            if self.products[product_id]["stock"] >= quantity:
+                self.products[product_id]["stock"] -= quantity
+                print(f"Sold {quantity} of {self.products[product_id]['name']}")
+            else:
+                print("Not enough stock!")
+        else:
+            print("Product not found!")
+    
+    def display_inventory(self):
+        print("\nCurrent Inventory:")
+        for pid, details in self.products.items():
+            print(f"ID: {pid}, Name: {details['name']}, Category: {details['category']}, Price: ${details['price']}, Stock: {details['stock']}")
+    
+    def save_inventory(self, filename="inventory.json"):
+        with open(filename, "w") as file:
+            json.dump(self.products, file, indent=4)
+        print("Inventory saved!")
+    
+    def load_inventory(self, filename="inventory.json"):
+        try:
+            with open(filename, "r") as file:
+                self.products = json.load(file)
+            print("Inventory loaded!")
+        except FileNotFoundError:
+            print("No saved inventory found.")
+
+if __name__ == "__main__":
+    store = Inventory()
+    store.load_inventory()
+    
+    while True:
+        print("\n1. Add Product\n2. Update Stock\n3. Sell Product\n4. Display Inventory\n5. Save & Exit")
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            store.add_product()
+        elif choice == "2":
+            store.update_stock()
+        elif choice == "3":
+            store.sell_product()
+        elif choice == "4":
+            store.display_inventory()
+        elif choice == "5":
+            store.save_inventory()
+            print("Exiting...")
+            break
+        else:
+            print("Invalid option. Try again!")
